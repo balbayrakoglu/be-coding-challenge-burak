@@ -1,15 +1,11 @@
-package de.dkb.api.codeChallenge.notification.model
+package de.dkb.api.codeChallenge.domain.model
 
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
 
 @Suppress("EnumEntryName")
 enum class NotificationType {
-    type1,
-    type2,
-    type3,
-    type4,
-    type5,
+    type1, type2, type3, type4, type5,
 }
 
 @Converter
@@ -24,4 +20,5 @@ class NotificationTypeSetConverter : AttributeConverter<MutableSet<NotificationT
             .split(";")
             .map { NotificationType.valueOf(it) }
             .toMutableSet()
+
 }
