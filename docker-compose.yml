@@ -8,3 +8,24 @@ services:
       POSTGRES_DB: codechallenge_db
     ports:
       - "5432:5432"
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  code-challenge:
+    build: .
+    container_name: code-challenge
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      REDIS_HOST: redis

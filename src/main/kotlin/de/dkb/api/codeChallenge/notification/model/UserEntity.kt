@@ -18,4 +18,9 @@ class UserEntity(
         inverseJoinColumns = [JoinColumn(name = "notification_type_id")]
     )
     val notifications: MutableSet<NotificationTypeEntity> = mutableSetOf()
-)
+) {
+    override fun equals(other: Any?): Boolean =
+        this === other || (other is UserEntity && id == other.id)
+
+    override fun hashCode(): Int = id.hashCode()
+}

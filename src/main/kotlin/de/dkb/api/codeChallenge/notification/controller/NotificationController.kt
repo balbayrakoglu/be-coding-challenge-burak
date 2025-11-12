@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import javax.validation.Valid
 
 @RestController
 @RequestMapping
@@ -22,14 +21,14 @@ class NotificationController(
 ) {
 
     @PostMapping("/register")
-    fun registerUser( @RequestBody userApiModel: UserRegisterRequestDto): UserRegisterRequestDto {
+    fun registerUser(@RequestBody userApiModel: UserRegisterRequestDto): UserRegisterRequestDto {
         val dto: RegisterRequestDto = registerUserDtoConverter.convert(userApiModel)   // API -> DTO
         val result: UserResponseDto = notificationService.register(dto)        // Service
         return userResponseDtoConverter.convert(result)                        // DTO -> API
     }
 
     @PostMapping("/notify")
-    fun sendNotification( @RequestBody notificationDto: NotificationDto) {
+    fun sendNotification(@RequestBody notificationDto: NotificationDto) {
         notificationService.sendNotification(notificationDto)
     }
 }

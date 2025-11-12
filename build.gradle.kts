@@ -48,8 +48,22 @@ dependencies {
     testRuntimeOnly("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.springframework.kafka:spring-kafka-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("io.mockk:mockk:1.13.7")
 
-    implementation("javax.validation:validation-api:2.0.1.Final")
+    //Constraint validation
+    implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+
+    //Actuator
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+
+    //Cache Redis
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+
+    // OpenAPI/Swagger
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.40")
+    implementation("org.springdoc:springdoc-openapi-kotlin:2.1.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 }
 
 kotlin {
@@ -61,4 +75,3 @@ kotlin {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
-

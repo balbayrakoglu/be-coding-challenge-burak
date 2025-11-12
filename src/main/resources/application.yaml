@@ -1,5 +1,7 @@
-spring.application.name: code-challenge
 spring:
+  application:
+    name: code-challenge
+
   datasource:
     url: jdbc:postgresql://localhost:5432/codechallenge_db
     username: postgres
@@ -9,12 +11,24 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-main.yaml
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  profiles:
+    active: dev
+
 logging:
   level:
-   org.hibernate.SQL: DEBUG
-springdoc:
-  api-docs:
-    enabled: true
-    path: /api/docs
-  swagger-ui:
-    enabled: false
+    org.hibernate.SQL: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,loggers
+  endpoint:
+    health:
+      show-details: never

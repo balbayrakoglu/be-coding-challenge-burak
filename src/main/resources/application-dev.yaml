@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/codechallenge_db
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: true
+  kafka:
+    listener:
+      enabled: false
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: DEBUG
+    de.dkb.api.codeChallenge: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env
