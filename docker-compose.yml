@@ -1,31 +1,52 @@
+version: '3.9'
+
 services:
   postgres:
-    image: postgres:latest
+    image: postgres:15
     container_name: codechallenge_postgres
+    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: codechallenge_db
     ports:
       - "5432:5432"
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   redis:
     image: redis:7
     container_name: redis
     restart: always
     ports:
       - "6379:6379"
+    networks:
+      - backend
 
   code-challenge:
     build: .
     container_name: code-challenge
     depends_on:
-      - postgres
-      - redis
-    ports:
-      - "8080:8080"
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     environment:
       SPRING_PROFILES_ACTIVE: dev
       DB_HOST: postgres
       DB_USER: postgres
       DB_PASSWORD: postgres
       REDIS_HOST: redis
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

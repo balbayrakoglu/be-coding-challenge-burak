@@ -4,6 +4,7 @@ plugins {
     id("org.springframework.boot") version "3.5.3"
     id("io.spring.dependency-management") version "1.1.7"
     id("com.autonomousapps.dependency-analysis") version "2.19.0"
+    id("org.jetbrains.kotlin.plugin.jpa") version "2.2.0"
 }
 
 group = "de.dkb.api"
@@ -31,7 +32,7 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
 
     // JSON serialization/deserialization
-    runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     // Database dependencies
     runtimeOnly("com.h2database:h2")
@@ -59,11 +60,12 @@ dependencies {
     //Cache Redis
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("org.springframework.data:spring-data-redis")
 
     // OpenAPI/Swagger
     implementation("io.swagger.core.v3:swagger-annotations:2.2.40")
-    implementation("org.springdoc:springdoc-openapi-kotlin:2.1.0")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
+    testImplementation(kotlin("test"))
 }
 
 kotlin {
@@ -74,4 +76,18 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
+    enabled = true
+    archiveFileName.set("app.jar")
+}
+
+allOpen {
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.MappedSuperclass")
+    annotation("jakarta.persistence.Embeddable")
+}
+noArg {
+    annotation("jakarta.persistence.Entity")
 }

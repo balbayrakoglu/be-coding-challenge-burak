@@ -13,5 +13,11 @@ databaseChangeLog:
       file: "db.changelog-0003-notification-catalog-and-join.yaml"
       relativeToChangelogFile: true
   - include:
-      file: "db.changelog-004-seed-notification-types.yaml"
+      file: "db.changelog-0004-seed-notification-types.yaml"
+      relativeToChangelogFile: true
+  - include:
+      file: "db.changelog-0005-insert-users-and-notifications.yaml"
+      relativeToChangelogFile: true
+  - include:
+      file: "db.changelog-0006-migrate-legacy-notifications-to-join.yaml"
       relativeToChangelogFile: true

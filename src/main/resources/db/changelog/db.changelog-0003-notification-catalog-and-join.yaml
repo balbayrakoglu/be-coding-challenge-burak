@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
-      id: 0003-create-notification-tables
-      author: you
+      id: 0003-create-notification-types-and-join
+      author: burak.albayrakoglu
       changes:
         - createTable:
             tableName: notification_types
@@ -14,18 +14,15 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: name
-                  type: VARCHAR(64)
+                  type: VARCHAR(255)
                   constraints:
                     nullable: false
+                    unique: true
               - column:
                   name: category
-                  type: VARCHAR(16)
+                  type: VARCHAR(50)
                   constraints:
                     nullable: false
-        - addUniqueConstraint:
-            tableName: notification_types
-            columnNames: name
-            constraintName: uk_notification_types_name
 
         - createTable:
             tableName: user_notifications
@@ -51,18 +48,14 @@ databaseChangeLog:
             baseColumnNames: user_id
             referencedTableName: users
             referencedColumnNames: id
-            constraintName: fk_un_user
+            constraintName: fk_user_notifications_user
+            onDelete: CASCADE
+            validate: false
 
         - addForeignKeyConstraint:
             baseTableName: user_notifications
             baseColumnNames: notification_type_id
             referencedTableName: notification_types
             referencedColumnNames: id
-            constraintName: fk_un_type
-
-        - createIndex:
-            tableName: notification_types
-            indexName: idx_notification_types_category
-            columns:
-              - column:
-                  name: category
+            constraintName: fk_user_notifications_type
+            onDelete: CASCADE

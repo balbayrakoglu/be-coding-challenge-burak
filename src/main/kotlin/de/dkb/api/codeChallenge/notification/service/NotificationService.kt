@@ -38,9 +38,14 @@ class NotificationService(
 
         val subscribedCategories: Set<Category> = resolvedTypes.map { it.category }.toSet()
 
-        val fullTypesByCategory = subscribedCategories
-            .flatMap { category -> notificationTypeCacheService.getAllByCategory(category) }
-            .toMutableSet()
+        val fullTypesByCategory = try {
+            subscribedCategories
+                .flatMap { category -> notificationTypeCacheService.getAllByCategory(category) }
+                .toMutableSet()
+        } catch (ex: Exception) {
+            log.error("Error while resolving types by category", ex)
+            throw ex
+        }
 
         user.notifications.clear()
         user.notifications.addAll(fullTypesByCategory)
@@ -61,23 +66,17 @@ class NotificationService(
 
     fun sendNotification(notificationDto: NotificationDto) {
         val notificationType = notificationTypeRepository.findByNameIgnoreCase(notificationDto.notificationType)
-            ?: run {
-                log.warn("sendNotifitacion.unknown_type type: '{}'", notificationDto.notificationType)
-                return
-            }
+            ?: throw IllegalArgumentException("Unknown notification type: ${notificationDto.notificationType}")
 
-        val user = userRepository.findByIdWithNotifications(notificationDto.userId).orElse(null)
-            ?: run {
-                log.info("sendNotification.user_not_found user: {}", notificationDto.userId)
-                return
-            }
+        val user = userRepository.findByIdWithNotifications(notificationDto.userId)
+            .orElseThrow { NoSuchElementException("User not found: ${notificationDto.userId}") }
 
         val isUserSubscribedToCategory = user.notifications.any { it.category == notificationType.category }
 
         if (isUserSubscribedToCategory) {
             log.info(
                 "sendNotification.allowed user: {} type: '{}' category: {} message= '{}'",
-                notificationType.name, notificationType.category, user.id, notificationDto.message
+                user.id, notificationType.name, notificationType.category, notificationDto.message
             )
         } else {
             log.info(

@@ -37,6 +37,6 @@ class CodeChallengeApplicationTests {
 
     @Test
     fun contextLoads() {
-        println("✅ Application context loaded successfully with PostgreSQL Testcontainer at: ${postgres.jdbcUrl}")
+        println("Application context loaded successfully with PostgreSQL Testcontainer at: ${postgres.jdbcUrl}")
     }
 }

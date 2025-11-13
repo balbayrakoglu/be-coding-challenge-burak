@@ -22,9 +22,9 @@ class NotificationController(
 
     @PostMapping("/register")
     fun registerUser(@RequestBody userApiModel: UserRegisterRequestDto): UserRegisterRequestDto {
-        val dto: RegisterRequestDto = registerUserDtoConverter.convert(userApiModel)   // API -> DTO
-        val result: UserResponseDto = notificationService.register(dto)        // Service
-        return userResponseDtoConverter.convert(result)                        // DTO -> API
+        val dto: RegisterRequestDto = registerUserDtoConverter.convert(userApiModel)
+        val result: UserResponseDto = notificationService.register(dto)
+        return userResponseDtoConverter.convert(result)
     }
 
     @PostMapping("/notify")

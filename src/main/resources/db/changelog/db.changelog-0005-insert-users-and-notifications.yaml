@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0005-insert-users-and-notifications
+      author: burak.albayrakoglu
+      changes:
+
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "cccccccc-cccc-cccc-cccc-cccccccccccc"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "dddddddd-dddd-dddd-dddd-dddddddddddd"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"
+      rollback:
+        - delete:
+            tableName: user_notifications
+        - delete:
+            tableName: users

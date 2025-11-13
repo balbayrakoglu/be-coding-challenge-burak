@@ -7,22 +7,26 @@ import java.util.UUID
 
 @Entity
 @Table(
-    name = "notification_types",
-    uniqueConstraints = [UniqueConstraint(name = "uk_notification_types_name", columnNames = ["name"])],
-    indexes = [Index(name = "idx_notification_types_category", columnList = "category")]
+    name = "notification_types"
 )
-class NotificationTypeEntity(
+class NotificationTypeEntity() {
 
     @Id
     @UuidGenerator
     @Column(columnDefinition = "uuid")
-    val id: UUID? = null,
+    var id: UUID? = null
 
     @Column(nullable = false, length = 64)
-    val name: String,
+    lateinit var name: String
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 16)
-    val category: Category
-)
+    lateinit var category: Category
+
+    constructor(name: String, category: Category) : this() {
+        this.name = name
+        this.category = category
+    }
+}
+
 
