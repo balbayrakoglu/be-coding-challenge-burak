@@ -1,0 +1,5 @@
+de\dk\api\codeChallenge\integration\NotificationControllerIT.class
+de\dk\api\codeChallenge\integration\AbstractIntegrationTestBase.class
+de\dk\api\codeChallenge\CodeChallengeApplicationTests.class
+de\dk\api\codeChallenge\notification\service\NotificationTypeServiceTest.class
+de\dk\api\codeChallenge\notification\service\NotificationServiceTest.class

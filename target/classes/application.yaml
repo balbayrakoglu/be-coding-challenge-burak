@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: code-challenge
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/codechallenge_db
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-main.yaml
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: 6379
+      timeout: 2000
+
+server:
+  port: 8080

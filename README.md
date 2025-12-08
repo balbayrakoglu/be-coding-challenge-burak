@@ -18,7 +18,7 @@ curl -X POST -H "Content-Type: application/json" localhost:8080/notify -d '{ "us
 
 ## 🔖 Overview
 
-This project implements a **Notification Management Service** built with **Kotlin** and **Spring Boot 3.5**.
+This project implements a **Notification Management Service** built with **Java 21** and **Spring Boot 3.4.0**.
 The system allows users to register for notification categories and receive notifications based on their preferences.
 
 The implementation demonstrates:
@@ -43,7 +43,7 @@ flowchart TD
     subgraph Service Layer
         B1[NotificationService]
         B2[NotificationTypeService]
-        B3[NotificationTypeCacheService]
+        B3[NotificationTypeProvider]
     end
     subgraph Data Layer
         C1[(PostgreSQL)]
@@ -67,7 +67,7 @@ sequenceDiagram
     participant Client
     participant Controller as NotificationController
     participant Service as NotificationService
-    participant Cache as NotificationTypeCacheService
+    participant Provider as NotificationTypeProvider
     participant Repo as NotificationTypeRepository
     participant DB as PostgreSQL
 
@@ -75,12 +75,12 @@ sequenceDiagram
     Controller->>Service: register(request)
     Service->>Repo: findByNameIgnoreCase("type1")
     Repo-->>Service: NotificationTypeEntity(category=A)
-    Service->>Cache: getAllByCategory(A)
+    Service->>Provider: getAllByCategory(A)
     alt Cache MISS
-        Cache->>Repo: findAllByCategory(A)
-        Repo-->>Cache: [type1, type2, type3]
+        Provider->>Repo: findAllByCategory(A)
+        Repo-->>Provider: [type1, type2, type3]
     end
-    Cache-->>Service: [type1, type2, type3]
+    Provider-->>Service: [type1, type2, type3]
     Service->>DB: save(UserEntity with all types)
     DB-->>Service: UserEntity persisted
     Service-->>Controller: UserResponseDto
@@ -92,14 +92,14 @@ sequenceDiagram
 ## ⚙️ Tech Stack
 
 | Category      | Technologies                                                 |
-| ------------- | ------------------------------------------------------------ |
-| Language      | Kotlin 2.2, Java 21                                          |
-| Framework     | Spring Boot 3.5 (Web, Data JPA, Validation, Cache, Actuator) |
+| ------------- |--------------------------------------------------------------|
+| Language      | Java 21                                                      |
+| Framework     | Spring Boot 3.4.0 (Web, Data JPA, Validation, Cache, Actuator) |
 | Database      | PostgreSQL + Liquibase migrations                            |
 | Cache         | Redis (Spring Cache abstraction)                             |
 | Messaging     | Kafka (listener placeholder for real-world scaling)          |
-| Testing       | JUnit 5, Mockk, Testcontainers (PostgreSQL)                  |
-| Build         | Gradle Kotlin DSL                                            |
+| Testing       | JUnit 5, Mockito, Testcontainers (PostgreSQL)                |
+| Build         | Maven                                                        |
 | Deployment    | Docker, Docker Compose                                       |
 | Documentation | Swagger / OpenAPI (springdoc)                                |
 
@@ -210,7 +210,7 @@ Once the app is running, open:
 | Notification sent                        | Delivered only if user is subscribed to that category                                  |
 | Category caching                         | Category → Notification types mapping cached in Redis                                  |
 | Validation                               | DTOs validated via Jakarta Validation annotations                                      |
-| Errors                                   | Handled via `GlobalRestExceptionHandler`                                               |
+| Errors                                   | Handled via `GlobalExceptionHandler`                                                   |
 
 ---
 
@@ -218,7 +218,7 @@ Once the app is running, open:
 
 ### **Unit Tests**
 
-* Written using **Mockk** and **JUnit 5**
+* Written using **Mockito** and **JUnit 5**
 * Cover `NotificationService` and `NotificationTypeService` core logic
 
 ### **Integration Tests**
@@ -229,12 +229,12 @@ Once the app is running, open:
 
 ### Example
 
-```kotlin
+```java
 @Test
-fun registerUser_shouldReturnOk() {
-    val user = UserRegisterRequestDto(UUID.randomUUID(), mutableSetOf("type1"))
-    val response = sendPostRequest("/register", user, UserRegisterRequestDto::class.java)
-    assertEquals(HttpStatus.OK, response.statusCode)
+void registerUser_shouldReturnOk() throws Exception {
+    UserRegisterRequestDto user = new UserRegisterRequestDto(UUID.randomUUID(), Set.of("type1"));
+    ResponseEntity<UserRegisterRequestDto> response = sendPostRequest("/register", user, UserRegisterRequestDto.class);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
 }
 ```
 
@@ -273,8 +273,8 @@ DB_PASSWORD: postgres
 ## 🤰 Build and Run Locally
 
 ```bash
-./gradlew clean build
-java -jar build/libs/be-coding-challenge-burak-0.0.1-SNAPSHOT.jar
+mvn clean package
+java -jar target/code-challenge-0.0.1-SNAPSHOT.jar
 ```
 
 Then visit:
@@ -285,14 +285,14 @@ Then visit:
 
 ## 🥉 Exception Handling
 
-Centralized via `GlobalRestExceptionHandler`:
+Centralized via `GlobalExceptionHandler`:
 
 | Exception                         | HTTP Status | Example Message                                  |     |
 | --------------------------------- | ----------- | ------------------------------------------------ | --- |
 | `MethodArgumentNotValidException` | 400         | `name: must not be null; category: must match 'A | B'` |
 | `IllegalArgumentException`        | 400         | `Invalid category 'C'`                           |     |
 | `NoSuchElementException`          | 404         | `User not found`                                 |     |
-| `Exception`                       | 500         | `Please try again later`                         |     |
+| `Exception`                       | 500         | `An unexpected error occurred`                   |     |
 
 ---
 
@@ -315,8 +315,8 @@ Centralized via `GlobalRestExceptionHandler`:
 ```
 src/
 ├── main/
-│   ├── kotlin/
-│   │   └── de/dkb/api/codeChallenge/
+│   ├── java/
+│   │   └── de/dk/api/codeChallenge/
 │   │       ├── notification/
 │   │       │   ├── controller/
 │   │       │   ├── service/
@@ -331,17 +331,12 @@ src/
 │       ├── application.yaml
 │       └── application-*.yaml
 └── test/
-    ├── integration/
-    └── service/
+    ├── java/
+    │   └── de/dk/api/codeChallenge/integration/
+    └── resources/
 ```
 
 ---
-## Considerations  
-During implementation, both unit tests and integration tests were added to validate the business logic and API endpoints.
-However, due to environment configuration and dependency issues, the integration tests could not be fully executed. It said that Class was not found for testClasses. 
-Despite this, all necessary test structures, container setups, and test data preparation logic are in place for future execution.
-
-This ensures that the project remains test-ready, and the test suite can be run successfully once the environment setup is completed.
 
 ## 🚀 Future Improvements
 

@@ -1,8 +1,8 @@
 # ---- Build Stage ----
-FROM gradle:8.10.2-jdk21 AS build
-WORKDIR /workspace/app
+FROM maven:3.9.8-eclipse-temurin-17 AS build
+WORKDIR /app
 COPY . .
-RUN gradle clean bootJar --no-daemon
+RUN mvn -q -B -DskipTests package
 
 # ---- Runtime Stage ----
 FROM eclipse-temurin:21-jdk

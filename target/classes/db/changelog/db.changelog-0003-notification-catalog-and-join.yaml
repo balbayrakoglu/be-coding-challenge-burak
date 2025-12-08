@@ -1,0 +1,61 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0003-create-notification-types-and-join
+      author: burak.albayrakoglu
+      changes:
+        - createTable:
+            tableName: notification_types
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: category
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: user_notifications
+            columns:
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: notification_type_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            tableName: user_notifications
+            columnNames: user_id, notification_type_id
+            constraintName: pk_user_notifications
+
+        - addForeignKeyConstraint:
+            baseTableName: user_notifications
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_user_notifications_user
+            onDelete: CASCADE
+            validate: false
+
+        - addForeignKeyConstraint:
+            baseTableName: user_notifications
+            baseColumnNames: notification_type_id
+            referencedTableName: notification_types
+            referencedColumnNames: id
+            constraintName: fk_user_notifications_type
+            onDelete: CASCADE
