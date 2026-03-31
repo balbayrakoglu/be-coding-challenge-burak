@@ -5,5 +5,6 @@ import java.util.UUID;
 
 public record RegisterRequestDto(
         UUID userId,
-        Set<String> notificationTypeNames) {
+        Set<String> notificationTypeNames
+) {
 }

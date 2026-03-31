@@ -1,9 +1,9 @@
 package de.dk.api.codeChallenge.integration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import de.dk.api.codeChallenge.notification.model.dto.NotificationDto;
 import de.dk.api.codeChallenge.notification.model.dto.UserRegisterRequestDto;
 import de.dk.api.codeChallenge.notification.repository.UserRepository;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
@@ -25,13 +25,33 @@ class NotificationControllerIT extends AbstractIntegrationTestBase {
 
     @Test
     void registerUser_shouldReturnOk() throws JsonProcessingException {
-        Set<String> notifications = new HashSet<>();
-        notifications.add("type1");
-        UserRegisterRequestDto user = new UserRegisterRequestDto(UUID.randomUUID(), notifications);
-
-        ResponseEntity<UserRegisterRequestDto> response = sendPostRequest("/register", user,
-                UserRegisterRequestDto.class);
+        UserRegisterRequestDto user = new UserRegisterRequestDto(UUID.randomUUID(), Set.of("type1"));
+        ResponseEntity<UserRegisterRequestDto> response = sendPostRequest("/register", user, UserRegisterRequestDto.class);
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void registerUser_givenUnknownType_shouldReturnBadRequest() throws JsonProcessingException {
+        UserRegisterRequestDto user = new UserRegisterRequestDto(UUID.randomUUID(), Set.of("unknown-type"));
+        ResponseEntity<String> response = sendPostRequest("/register", user, String.class);
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void registerUser_givenEmptyNotifications_shouldReturnBadRequest() throws JsonProcessingException {
+        UserRegisterRequestDto user = new UserRegisterRequestDto(UUID.randomUUID(), Set.of());
+        ResponseEntity<String> response = sendPostRequest("/register", user, String.class);
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void notify_givenUnknownType_shouldReturnBadRequest() throws JsonProcessingException {
+        NotificationDto dto = new NotificationDto(UUID.randomUUID(), "unknown-type", "hello");
+        ResponseEntity<String> response = sendPostRequest("/notify", dto, String.class);
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 }
